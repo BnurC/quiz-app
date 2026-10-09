@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz</title>
+</head>
+<body>
+  <div id="girisEkrani">
+    <input id="pinKutu" placeholder="PIN" inputmode="numeric">
+    <input id="isimKutu" placeholder="İsim">
+    <button id="katil">Katıl</button>
+  </div>
+
+  <div id="soruEkrani" style="display:none">
+    <h3 id="soruBilgi"></h3>
+    <div id="butonlar"></div>
+  </div>
+
+  <p id="durum"></p>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let pin = "";
+
+    document.getElementById("katil").addEventListener("click", () => {
+      socket.emit("katil", {
+        pin: document.getElementById("pinKutu").value,
+        isim: document.getElementById("isimKutu").value,
+      });
+    });
+
+    socket.on("hata", (mesaj) => {
+      document.getElementById("durum").textContent = mesaj;
+    });
+
+    socket.on("katildin", (veri) => {
+      pin = veri.pin;
+      document.getElementById("girisEkrani").style.display = "none";
+      document.getElementById("durum").textContent =
+        veri.isim + " olarak katıldın! Oyunun başlamasını bekle.";
+    });
+
+    socket.on("soru", (s) => {
+      document.getElementById("soruEkrani").style.display = "block";
+      document.getElementById("durum").textContent = "";
+      document.getElementById("soruBilgi").textContent = "Soru " + s.no + " / " + s.toplam;
+
+      const alan = document.getElementById("butonlar");
+      alan.innerHTML = "";
+      s.secenekler.forEach((metin, i) => {
+        const b = document.createElement("button");
+        b.textContent = metin;
+        b.style.cssText = "display:block;width:100%;padding:20px;margin:8px 0;font-size:18px";
+        b.addEventListener("click", () => {
+          socket.emit("cevap", { pin: pin, secenek: i });
+        });
+        alan.appendChild(b);
+      });
+    });
+
+    socket.on("cevapAlindi", () => {
+      document.getElementById("butonlar").innerHTML = "";
+      document.getElementById("durum").textContent = "Cevabın alındı, diğerleri bekleniyor...";
+    });
+
+    socket.on("sonuc", (v) => {
+      document.getElementById("butonlar").innerHTML = "";
+      document.getElementById("durum").textContent =
+        (v.dogruMu ? "Doğru! +" + v.kazanilan : "Yanlış ya da cevapsız.") +
+        " Toplam puanın: " + v.toplam;
+    });
+
+    socket.on("oyunBitti", () => {
+      document.getElementById("soruEkrani").style.display = "none";
+      document.getElementById("durum").textContent = "Oyun bitti! Sonuçlar ekranda.";
+    });
+  </script>
+</body>
+</html>

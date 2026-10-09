@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Host</title>
+</head>
+<body>
+  <div id="lobi">
+    <h1 id="pinYazi">PIN yükleniyor...</h1>
+    <h2>Oyuncular</h2>
+    <ul id="oyuncular"></ul>
+    <button id="baslat">Oyunu Başlat</button>
+  </div>
+
+  <div id="soruEkrani" style="display:none">
+    <h3 id="soruNo"></h3>
+    <h1 id="soruMetin"></h1>
+    <h2 id="sayac"></h2>
+    <ol id="secenekler" type="A"></ol>
+    <p id="cevapSayisi"></p>
+  </div>
+
+  <div id="sonucEkrani" style="display:none">
+    <h2 id="dogruCevap"></h2>
+    <h3>Skor Tablosu</h3>
+    <ol id="skorlar"></ol>
+    <button id="sonraki">Sonraki</button>
+  </div>
+
+  <div id="bitisEkrani" style="display:none">
+    <h1>Oyun Bitti!</h1>
+    <ol id="sonSkorlar"></ol>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let pin = "";
+    let sayacId = null;
+
+    function goster(id) {
+      ["lobi", "soruEkrani", "sonucEkrani", "bitisEkrani"].forEach((e) => {
+        document.getElementById(e).style.display = e === id ? "block" : "none";
+      });
+    }
+
+    function listeDoldur(id, satirlar) {
+      const liste = document.getElementById(id);
+      liste.innerHTML = "";
+      satirlar.forEach((metin) => {
+        const li = document.createElement("li");
+        li.textContent = metin;
+        liste.appendChild(li);
+      });
+    }
+
+    socket.emit("oyunOlustur");
+
+    socket.on("oyunOlusturuldu", (p) => {
+      pin = p;
+      document.getElementById("pinYazi").textContent = "PIN: " + pin;
+    });
+
+    socket.on("oyuncuListesi", (isimler) => listeDoldur("oyuncular", isimler));
+
+    document.getElementById("baslat").addEventListener("click", () => {
+      socket.emit("oyunBaslat", pin);
+    });
+
+    document.getElementById("sonraki").addEventListener("click", () => {
+      socket.emit("sonrakiSoru", pin);
+    });
+
+    socket.on("soru", (s) => {
+      goster("soruEkrani");
+      document.getElementById("soruNo").textContent = "Soru " + s.no + " / " + s.toplam;
+      document.getElementById("soruMetin").textContent = s.soru;
+      document.getElementById("cevapSayisi").textContent = "";
+      listeDoldur("secenekler", s.secenekler);
+
+      let kalan = s.sure;
+      document.getElementById("sayac").textContent = kalan;
+      clearInterval(sayacId);
+      sayacId = setInterval(() => {
+        kalan--;
+        document.getElementById("sayac").textContent = Math.max(kalan, 0);
+        if (kalan <= 0) clearInterval(sayacId);
+      }, 1000);
+    });
+
+    socket.on("cevapSayisi", (v) => {
+      document.getElementById("cevapSayisi").textContent =
+        v.cevaplayan + " / " + v.toplam + " kişi cevapladı";
+    });
+
+    socket.on("soruSonucu", (v) => {
+      clearInterval(sayacId);
+      goster("sonucEkrani");
+      document.getElementById("dogruCevap").textContent = "Doğru cevap: " + v.dogruMetin;
+      listeDoldur("skorlar", v.siralama.map((o) => o.isim + " - " + o.puan));
+      document.getElementById("sonraki").textContent = v.sonSoruMu ? "Sonuçları Göster" : "Sonraki";
+    });
+
+    socket.on("oyunBitti", (siralama) => {
+      goster("bitisEkrani");
+      listeDoldur("sonSkorlar", siralama.map((o) => o.isim + " - " + o.puan));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+[
+  {
+    "soru": "Türkiye'nin başkenti neresidir?",
+    "secenekler": ["İstanbul", "Ankara", "İzmir", "Konya"],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "2 + 2 × 3 kaçtır?",
+    "secenekler": ["12", "10", "8", "6"],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Hangisi bir programlama dilidir?",
+    "secenekler": ["Cobra", "Python", "Kaplan", "Yılan"],
+    "dogru": 1,
+    "sure": 15
+  }
+]
