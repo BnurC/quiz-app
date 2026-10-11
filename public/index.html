@@ -17,13 +17,16 @@
     </div>
 
     <div id="soruEkrani" style="display:none">
+      <p class="skorBilgi" id="skorBilgi" style="display:none"></p>
       <h3 id="soruBilgi"></h3>
       <h2 class="soruMetin" id="soruMetin"></h2>
       <div class="secenekler" id="butonlar"></div>
     </div>
 
     <p class="mesaj" id="durum"></p>
+
     <button class="buton" id="yeniKatil" style="display:none">Yeni Oyuna Katıl</button>
+    <button class="buton ikincil" id="cik" style="display:none">Oyundan Çık</button>
 
   </div>
 
@@ -33,10 +36,22 @@
     let pin = "";
     let benimIsim = "";
 
+    const urlPin = new URLSearchParams(location.search).get("pin");
+    if (urlPin) {
+      document.getElementById("pinKutu").value = urlPin;
+      document.getElementById("isimKutu").focus();
+    }
+
     function durumYaz(metin, hata) {
       const d = document.getElementById("durum");
       d.textContent = metin;
       d.className = hata ? "mesaj hata" : "mesaj";
+    }
+
+    function skorYaz(metin) {
+      const e = document.getElementById("skorBilgi");
+      e.textContent = metin;
+      e.style.display = metin ? "block" : "none";
     }
 
     socket.on("connect", () => {
@@ -52,6 +67,7 @@
       sessionStorage.removeItem("oyuncu");
       document.getElementById("girisEkrani").style.display = "block";
       document.getElementById("soruEkrani").style.display = "none";
+      document.getElementById("cik").style.display = "none";
       durumYaz("");
     });
 
@@ -66,6 +82,17 @@
       location.reload();
     });
 
+    document.getElementById("cik").addEventListener("click", () => {
+      if (confirm("Oyundan çıkmak istediğine emin misin?")) {
+        socket.emit("cik");
+      }
+    });
+
+    socket.on("ciktin", () => {
+      sessionStorage.removeItem("oyuncu");
+      location.href = "/";
+    });
+
     socket.on("hata", (mesaj) => durumYaz(mesaj, true));
 
     socket.on("katildin", (veri) => {
@@ -73,7 +100,13 @@
       benimIsim = veri.isim;
       sessionStorage.setItem("oyuncu", JSON.stringify(veri));
       document.getElementById("girisEkrani").style.display = "none";
+      document.getElementById("cik").style.display = "inline-block";
       durumYaz(veri.isim + " olarak katıldın! Oyunun başlamasını bekle.");
+    });
+
+    // Yeni soru başlarken: güncel sıra ve puan
+    socket.on("siraGuncel", (v) => {
+      skorYaz("Sıran: " + v.sira + " / " + v.kisi + "  •  Puanın: " + v.puan);
     });
 
     socket.on("soru", (s) => {
@@ -101,18 +134,25 @@
       durumYaz("Cevabın alındı, diğerleri bekleniyor...");
     });
 
+    // Soru bitince: bu sorudan ÖNCEKİ sıra/puan + bu sorudan kazanılan puan
     socket.on("sonuc", (v) => {
       document.getElementById("soruEkrani").style.display = "block";
       document.getElementById("butonlar").innerHTML = "";
       document.getElementById("soruMetin").textContent = "";
       durumYaz(
-        (v.dogruMu ? "Doğru! +" + v.kazanilan : "Yanlış ya da cevapsız.") +
-        " Toplam puanın: " + v.toplam
+        (v.dogruMu ? "Doğru!" : "Yanlış ya da cevapsız.") + " +" + v.kazanilan + " puan"
       );
+      if (v.oncekiSira) {
+        skorYaz("Sıran: " + v.oncekiSira + " / " + v.kisi + "  •  Puanın: " + v.oncekiPuan);
+      } else {
+        skorYaz("");
+      }
     });
 
     socket.on("oyunBitti", (siralama) => {
       sessionStorage.removeItem("oyuncu");
+      skorYaz("");
+      document.getElementById("cik").style.display = "none";
       document.getElementById("yeniKatil").style.display = "inline-block";
       document.getElementById("soruEkrani").style.display = "none";
       const sira = siralama.findIndex((o) => o.isim === benimIsim) + 1;

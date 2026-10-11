@@ -9,8 +9,13 @@
 <body>
   <div class="sayfa">
 
+    <div id="bitirKutu" class="bitirKutu" style="display:none">
+      <button class="buton ikincil" id="bitir">Oyunu Bitir</button>
+    </div>
+
     <div id="lobi">
       <p class="adres">Katılmak için: <b id="adres"></b></p>
+      <img class="qr" id="qr" alt="QR kod">
       <h3>PIN</h3>
       <h1 class="pin" id="pinYazi">...</h1>
       <h2>Oyuncular</h2>
@@ -55,6 +60,8 @@
       ["lobi", "soruEkrani", "sonucEkrani", "bitisEkrani"].forEach((e) => {
         document.getElementById(e).style.display = e === id ? "block" : "none";
       });
+      document.getElementById("bitirKutu").style.display =
+        id === "soruEkrani" || id === "sonucEkrani" ? "block" : "none";
     }
 
     function listeDoldur(id, satirlar) {
@@ -105,6 +112,7 @@
       localStorage.setItem("hostPin", v.pin);
       localStorage.setItem("hostToken", v.token);
       document.getElementById("pinYazi").textContent = pin;
+      document.getElementById("qr").src = "/qr?pin=" + pin;
     });
 
     socket.on("oyuncuListesi", (isimler) => listeDoldur("oyuncular", isimler));
@@ -115,6 +123,12 @@
 
     document.getElementById("sonraki").addEventListener("click", () => {
       socket.emit("sonrakiSoru", pin);
+    });
+
+    document.getElementById("bitir").addEventListener("click", () => {
+      if (confirm("Oyun şimdi bitirilsin mi?")) {
+        socket.emit("oyunuBitir", pin);
+      }
     });
 
     document.getElementById("yeniOyun").addEventListener("click", () => {

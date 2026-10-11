@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { randomUUID } = require("crypto");
+const QRCode = require("qrcode");
 const { Server } = require("socket.io");
 const sorular = require("./questions.json");
 
@@ -10,6 +11,18 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/qr", async (req, res) => {
+  const pin = String(req.query.pin || "").replace(/\D/g, "").slice(0, 6);
+  const protokol = String(req.headers["x-forwarded-proto"] || req.protocol).split(",")[0];
+  const adres = protokol + "://" + req.get("host") + "/?pin=" + pin;
+  try {
+    const png = await QRCode.toBuffer(adres, { width: 300, margin: 1 });
+    res.type("png").send(png);
+  } catch (e) {
+    res.status(500).end();
+  }
+});
 
 const oyunlar = {};
 
@@ -25,6 +38,18 @@ function siralama(oyun) {
   return [...oyun.oyuncular]
     .sort((a, b) => b.puan - a.puan)
     .map((o) => ({ isim: o.isim, puan: o.puan }));
+}
+
+function siraBul(oyun, oyuncu) {
+  return oyun.oyuncular.filter((o) => o.puan > oyuncu.puan).length + 1;
+}
+
+function siraPaketi(oyun, oyuncu) {
+  return {
+    sira: siraBul(oyun, oyuncu),
+    puan: oyuncu.puan,
+    kisi: oyun.oyuncular.length,
+  };
 }
 
 function soruPaketi(oyun) {
@@ -65,6 +90,9 @@ function sonrakiSoru(pin) {
     o.cevapladi = false;
     o.sonSecenek = null;
     o.sonSonuc = null;
+    if (oyun.soruNo > 0) {
+      io.to(o.id).emit("siraGuncel", siraPaketi(oyun, o));
+    }
   });
 
   io.to(pin).emit("soru", soruPaketi(oyun));
@@ -81,12 +109,24 @@ function soruBitir(pin) {
   const s = sorular[oyun.soruNo];
   const dagilim = s.secenekler.map(() => 0);
 
-  oyun.oyuncular.forEach((o) => {
+  // Puanlar eklenmeden ÖNCE herkesin sırasını hesapla
+  const oncekiSiralar = oyun.oyuncular.map((o) => siraBul(oyun, o));
+  const kisi = oyun.oyuncular.length;
+
+  oyun.oyuncular.forEach((o, i) => {
     const dogruMu = o.sonSecenek === s.dogru;
     const kazanilan = dogruMu ? o.sonPuan : 0;
+    const oncekiPuan = o.puan;
     o.puan += kazanilan;
     if (o.sonSecenek !== null) dagilim[o.sonSecenek]++;
-    o.sonSonuc = { dogruMu, kazanilan, toplam: o.puan };
+    o.sonSonuc = {
+      dogruMu,
+      kazanilan,
+      toplam: o.puan,
+      oncekiPuan,
+      oncekiSira: oyun.soruNo > 0 ? oncekiSiralar[i] : null,
+      kisi,
+    };
     io.to(o.id).emit("sonuc", o.sonSonuc);
   });
 
@@ -197,6 +237,7 @@ io.on("connection", (socket) => {
     socket.emit("katildin", { pin: pin, isim: oyuncu.isim, token: oyuncu.token });
 
     if (oyun.durum === "soru") {
+      if (oyun.soruNo > 0) socket.emit("siraGuncel", siraPaketi(oyun, oyuncu));
       if (oyuncu.cevapladi) socket.emit("cevapAlindi");
       else socket.emit("soru", soruPaketi(oyun));
     } else if (oyun.durum === "sonuc" && oyuncu.sonSonuc) {
@@ -244,6 +285,37 @@ io.on("connection", (socket) => {
     const oyun = oyunlar[String(pin)];
     if (!oyun || oyun.host !== socket.id || oyun.durum !== "sonuc") return;
     sonrakiSoru(String(pin));
+  });
+
+  socket.on("oyunuBitir", (pin) => {
+    pin = String(pin);
+    const oyun = oyunlar[pin];
+    if (!oyun || oyun.host !== socket.id) return;
+    if (oyun.durum !== "soru" && oyun.durum !== "sonuc") return;
+
+    clearTimeout(oyun.zamanlayici);
+    oyun.durum = "bitti";
+    io.to(pin).emit("oyunBitti", siralama(oyun));
+  });
+
+  socket.on("cik", () => {
+    for (const pin in oyunlar) {
+      const oyun = oyunlar[pin];
+      const i = oyun.oyuncular.findIndex((o) => o.id === socket.id);
+      if (i === -1) continue;
+
+      oyun.oyuncular.splice(i, 1);
+      socket.leave(pin);
+      socket.emit("ciktin");
+      io.to(oyun.host).emit("oyuncuListesi", oyun.oyuncular.map((o) => o.isim));
+
+      if (oyun.durum === "soru") {
+        const paket = cevapSayisiPaketi(oyun);
+        io.to(oyun.host).emit("cevapSayisi", paket);
+        if (paket.toplam > 0 && paket.cevaplayan === paket.toplam) soruBitir(pin);
+      }
+      return;
+    }
   });
 
   socket.on("disconnect", () => {

@@ -122,3 +122,29 @@ button.sec:active { transform: scale(0.96); }
   .soruMetin { font-size: 26px; }
   .sec { font-size: 18px; padding: 24px 8px; min-height: 90px; }
 }
+.buton.ikincil {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-top: 30px;
+}
+
+.skorBilgi {
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.bitirKutu { text-align: right; }
+
+.qr {
+  width: 240px;
+  height: 240px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 8px;
+}

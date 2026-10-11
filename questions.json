@@ -1,20 +1,222 @@
 [
   {
-    "soru": "Türkiye'nin başkenti neresidir?",
-    "secenekler": ["İstanbul", "Ankara", "İzmir", "Konya"],
+    "soru": "Türkiye'nin en kalabalık şehri hangisidir?",
+    "secenekler": [
+      "Ankara",
+      "İstanbul",
+      "İzmir",
+      "Bursa"
+    ],
     "dogru": 1,
     "sure": 15
   },
   {
-    "soru": "2 + 2 × 3 kaçtır?",
-    "secenekler": ["12", "10", "8", "6"],
+    "soru": "Suyun kimyasal formülü nedir?",
+    "secenekler": [
+      "CO2",
+      "O2",
+      "H2O",
+      "NaCl"
+    ],
     "dogru": 2,
     "sure": 15
   },
   {
-    "soru": "Hangisi bir programlama dilidir?",
-    "secenekler": ["Cobra", "Python", "Kaplan", "Yılan"],
+    "soru": "Türkiye Cumhuriyeti hangi yıl ilan edilmiştir?",
+    "secenekler": [
+      "1453",
+      "1919",
+      "1938",
+      "1923"
+    ],
+    "dogru": 3,
+    "sure": 15
+  },
+  {
+    "soru": "Güneş Sistemi'ndeki en büyük gezegen hangisidir?",
+    "secenekler": [
+      "Jüpiter",
+      "Satürn",
+      "Mars",
+      "Neptün"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Dünyanın en büyük kıtası hangisidir?",
+    "secenekler": [
+      "Afrika",
+      "Avrupa",
+      "Asya",
+      "Amerika"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "12 × 12 işleminin sonucu kaçtır?",
+    "secenekler": [
+      "124",
+      "136",
+      "148",
+      "144"
+    ],
+    "dogru": 3,
+    "sure": 15
+  },
+  {
+    "soru": "Bitkiler fotosentez sırasında havadan hangi gazı alır?",
+    "secenekler": [
+      "Oksijen",
+      "Azot",
+      "Karbondioksit",
+      "Hidrojen"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Mona Lisa tablosunu kim yapmıştır?",
+    "secenekler": [
+      "Michelangelo",
+      "Picasso",
+      "Van Gogh",
+      "Leonardo da Vinci"
+    ],
+    "dogru": 3,
+    "sure": 15
+  },
+  {
+    "soru": "Türkiye'nin en yüksek dağı hangisidir?",
+    "secenekler": [
+      "Erciyes",
+      "Uludağ",
+      "Ağrı Dağı",
+      "Palandöken"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Futbolda bir takım sahada kaç oyuncuyla oynar?",
+    "secenekler": [
+      "11",
+      "10",
+      "12",
+      "9"
+    ],
+    "dogru": 0,
+    "sure": 10
+  },
+  {
+    "soru": "Hangisi bir web tarayıcısıdır?",
+    "secenekler": [
+      "Excel",
+      "Chrome",
+      "Word",
+      "Paint"
+    ],
     "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "İstanbul hangi yıl fethedilmiştir?",
+    "secenekler": [
+      "1299",
+      "1453",
+      "1071",
+      "1517"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Hangisi bir memeli hayvandır?",
+    "secenekler": [
+      "Yunus",
+      "Köpekbalığı",
+      "Kurbağa",
+      "Timsah"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Bir üçgenin iç açıları toplamı kaç derecedir?",
+    "secenekler": [
+      "90",
+      "360",
+      "270",
+      "180"
+    ],
+    "dogru": 3,
+    "sure": 15
+  },
+  {
+    "soru": "Japonya'nın başkenti neresidir?",
+    "secenekler": [
+      "Tokyo",
+      "Pekin",
+      "Seul",
+      "Bangkok"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Vücutta kanı pompalayan organ hangisidir?",
+    "secenekler": [
+      "Akciğer",
+      "Karaciğer",
+      "Mide",
+      "Kalp"
+    ],
+    "dogru": 3,
+    "sure": 10
+  },
+  {
+    "soru": "Altının kimyasal simgesi nedir?",
+    "secenekler": [
+      "Ag",
+      "Au",
+      "Fe",
+      "Cu"
+    ],
+    "dogru": 1,
+    "sure": 20
+  },
+  {
+    "soru": "Romeo ve Juliet adlı oyunun yazarı kimdir?",
+    "secenekler": [
+      "Shakespeare",
+      "Dickens",
+      "Tolstoy",
+      "Hugo"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Hangi gezegen \"Kızıl Gezegen\" olarak bilinir?",
+    "secenekler": [
+      "Venüs",
+      "Mars",
+      "Merkür",
+      "Satürn"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "81 sayısının karekökü kaçtır?",
+    "secenekler": [
+      "9",
+      "7",
+      "8",
+      "10"
+    ],
+    "dogru": 0,
     "sure": 15
   }
 ]
