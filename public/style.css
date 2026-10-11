@@ -1,0 +1,124 @@
+:root {
+  --mor: #46178f;
+  --kirmizi: #e21b3c;
+  --mavi: #1368ce;
+  --sari: #d89e00;
+  --yesil: #26890c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--mor);
+  color: #fff;
+  font-family: system-ui, Arial, sans-serif;
+  text-align: center;
+}
+
+.sayfa { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+h1, h2, h3 { margin: 10px 0; }
+
+input {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 12px auto;
+  padding: 16px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.buton {
+  background: #fff;
+  color: #222;
+  border: none;
+  border-radius: 8px;
+  padding: 16px 32px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 12px 0;
+}
+
+.buton:active { transform: scale(0.97); }
+
+.pin { font-size: 72px; letter-spacing: 8px; margin: 0; }
+
+.adres { font-size: 24px; opacity: 0.9; }
+
+.mesaj { font-size: 22px; min-height: 30px; margin: 16px 0; }
+
+.hata { color: #ffd2d9; }
+
+.sayac { font-size: 56px; margin: 8px 0; }
+
+.soruMetin { font-size: 36px; margin: 16px 0; }
+
+/* Oyuncu isim kutucukları */
+#oyuncular {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+#oyuncular li {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 20px;
+}
+
+/* Skor tabloları */
+.skorlar {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+  font-size: 24px;
+  line-height: 1.8;
+}
+
+/* Renkli şıklar: 2x2 ızgara */
+.secenekler {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.sec {
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 30px 12px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s0 { background: var(--kirmizi); }
+.s1 { background: var(--mavi); }
+.s2 { background: var(--sari); }
+.s3 { background: var(--yesil); }
+
+button.sec { cursor: pointer; }
+button.sec:active { transform: scale(0.96); }
+
+.soluk { opacity: 0.3; }
+
+/* Telefon */
+@media (max-width: 600px) {
+  .pin { font-size: 52px; }
+  .soruMetin { font-size: 26px; }
+  .sec { font-size: 18px; padding: 24px 8px; min-height: 90px; }
+}

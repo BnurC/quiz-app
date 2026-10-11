@@ -2,35 +2,44 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Host</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div id="lobi">
-    <h1 id="pinYazi">PIN yükleniyor...</h1>
-    <h2>Oyuncular</h2>
-    <ul id="oyuncular"></ul>
-    <button id="baslat">Oyunu Başlat</button>
-  </div>
+  <div class="sayfa">
 
-  <div id="soruEkrani" style="display:none">
-    <h3 id="soruNo"></h3>
-    <h1 id="soruMetin"></h1>
-    <h2 id="sayac"></h2>
-    <ol id="secenekler" type="A"></ol>
-    <p id="cevapSayisi"></p>
-  </div>
+    <div id="lobi">
+      <p class="adres">Katılmak için: <b id="adres"></b></p>
+      <h3>PIN</h3>
+      <h1 class="pin" id="pinYazi">...</h1>
+      <h2>Oyuncular</h2>
+      <ul id="oyuncular"></ul>
+      <button class="buton" id="baslat">Oyunu Başlat</button>
+    </div>
 
-  <div id="sonucEkrani" style="display:none">
-    <h2 id="dogruCevap"></h2>
-    <h3>Skor Tablosu</h3>
-    <ol id="skorlar"></ol>
-    <button id="sonraki">Sonraki</button>
-  </div>
+    <div id="soruEkrani" style="display:none">
+      <h3 id="soruNo"></h3>
+      <h1 class="soruMetin" id="soruMetin"></h1>
+      <div class="sayac" id="sayac"></div>
+      <div class="secenekler" id="secenekler"></div>
+      <p class="mesaj" id="cevapSayisi"></p>
+    </div>
 
-  <div id="bitisEkrani" style="display:none">
-    <h1>Oyun Bitti!</h1>
-    <ol id="sonSkorlar"></ol>
-    <button id="yeniOyun">Yeni Oyun</button>
+    <div id="sonucEkrani" style="display:none">
+      <h2 id="dogruCevap"></h2>
+      <div class="secenekler" id="sonucSecenekler"></div>
+      <h3>Skor Tablosu</h3>
+      <ol class="skorlar" id="skorlar"></ol>
+      <button class="buton" id="sonraki">Sonraki</button>
+    </div>
+
+    <div id="bitisEkrani" style="display:none">
+      <h1>Oyun Bitti!</h1>
+      <ol class="skorlar" id="sonSkorlar"></ol>
+      <button class="buton" id="yeniOyun">Yeni Oyun</button>
+    </div>
+
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -38,6 +47,9 @@
     const socket = io();
     let pin = "";
     let sayacId = null;
+    let sonSecenekler = [];
+
+    document.getElementById("adres").textContent = location.host;
 
     function goster(id) {
       ["lobi", "soruEkrani", "sonucEkrani", "bitisEkrani"].forEach((e) => {
@@ -55,33 +67,45 @@
       });
     }
 
+    function secenekCiz(id, secenekler, sayilar, dogru) {
+      const alan = document.getElementById(id);
+      alan.innerHTML = "";
+      secenekler.forEach((metin, i) => {
+        const d = document.createElement("div");
+        d.className = "sec s" + i;
+        if (dogru !== undefined && i !== dogru) d.classList.add("soluk");
+        d.textContent = sayilar ? metin + " (" + sayilar[i] + ")" : metin;
+        alan.appendChild(d);
+      });
+    }
+
     if (location.search === "?yeni") {
-  localStorage.removeItem("hostPin");
-  localStorage.removeItem("hostToken");
-}
+      localStorage.removeItem("hostPin");
+      localStorage.removeItem("hostToken");
+    }
 
-socket.on("connect", () => {
-  const kayitliPin = localStorage.getItem("hostPin");
-  const kayitliToken = localStorage.getItem("hostToken");
-  if (kayitliPin && kayitliToken) {
-    socket.emit("hostDon", { pin: kayitliPin, token: kayitliToken });
-  } else {
-    socket.emit("oyunOlustur");
-  }
-});
+    socket.on("connect", () => {
+      const kayitliPin = localStorage.getItem("hostPin");
+      const kayitliToken = localStorage.getItem("hostToken");
+      if (kayitliPin && kayitliToken) {
+        socket.emit("hostDon", { pin: kayitliPin, token: kayitliToken });
+      } else {
+        socket.emit("oyunOlustur");
+      }
+    });
 
-socket.on("oturumYok", () => {
-  localStorage.removeItem("hostPin");
-  localStorage.removeItem("hostToken");
-  socket.emit("oyunOlustur");
-});
+    socket.on("oturumYok", () => {
+      localStorage.removeItem("hostPin");
+      localStorage.removeItem("hostToken");
+      socket.emit("oyunOlustur");
+    });
 
-socket.on("oyunOlusturuldu", (v) => {
-  pin = v.pin;
-  localStorage.setItem("hostPin", v.pin);
-  localStorage.setItem("hostToken", v.token);
-  document.getElementById("pinYazi").textContent = "PIN: " + pin;
-});
+    socket.on("oyunOlusturuldu", (v) => {
+      pin = v.pin;
+      localStorage.setItem("hostPin", v.pin);
+      localStorage.setItem("hostToken", v.token);
+      document.getElementById("pinYazi").textContent = pin;
+    });
 
     socket.on("oyuncuListesi", (isimler) => listeDoldur("oyuncular", isimler));
 
@@ -92,7 +116,7 @@ socket.on("oyunOlusturuldu", (v) => {
     document.getElementById("sonraki").addEventListener("click", () => {
       socket.emit("sonrakiSoru", pin);
     });
-    
+
     document.getElementById("yeniOyun").addEventListener("click", () => {
       localStorage.removeItem("hostPin");
       localStorage.removeItem("hostToken");
@@ -101,10 +125,11 @@ socket.on("oyunOlusturuldu", (v) => {
 
     socket.on("soru", (s) => {
       goster("soruEkrani");
+      sonSecenekler = s.secenekler;
       document.getElementById("soruNo").textContent = "Soru " + s.no + " / " + s.toplam;
       document.getElementById("soruMetin").textContent = s.soru;
       document.getElementById("cevapSayisi").textContent = "";
-      listeDoldur("secenekler", s.secenekler);
+      secenekCiz("secenekler", s.secenekler);
 
       let kalan = s.sure;
       document.getElementById("sayac").textContent = kalan;
@@ -125,13 +150,15 @@ socket.on("oyunOlusturuldu", (v) => {
       clearInterval(sayacId);
       goster("sonucEkrani");
       document.getElementById("dogruCevap").textContent = "Doğru cevap: " + v.dogruMetin;
+      secenekCiz("sonucSecenekler", sonSecenekler.length ? sonSecenekler : [v.dogruMetin], v.dagilim, v.dogru);
       listeDoldur("skorlar", v.siralama.map((o) => o.isim + " - " + o.puan));
       document.getElementById("sonraki").textContent = v.sonSoruMu ? "Sonuçları Göster" : "Sonraki";
     });
 
     socket.on("oyunBitti", (siralama) => {
+      clearInterval(sayacId);
       goster("bitisEkrani");
-      listeDoldur("sonSkorlar", siralama.map((o) => o.isim + " - " + o.puan));
+      listeDoldur("sonSkorlar", siralama.slice(0, 10).map((o) => o.isim + " - " + o.puan));
     });
   </script>
 </body>

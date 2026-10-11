@@ -4,26 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quiz</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div id="girisEkrani">
-    <input id="pinKutu" placeholder="PIN" inputmode="numeric">
-    <input id="isimKutu" placeholder="İsim">
-    <button id="katil">Katıl</button>
-  </div>
+  <div class="sayfa">
 
-  <div id="soruEkrani" style="display:none">
-    <h3 id="soruBilgi"></h3>
-    <div id="butonlar"></div>
-  </div>
+    <div id="girisEkrani">
+      <h1>Quiz</h1>
+      <input id="pinKutu" placeholder="PIN" inputmode="numeric" autocomplete="off">
+      <input id="isimKutu" placeholder="İsim" maxlength="20" autocomplete="off">
+      <button class="buton" id="katil">Katıl</button>
+    </div>
 
-  <p id="durum"></p>
+    <div id="soruEkrani" style="display:none">
+      <h3 id="soruBilgi"></h3>
+      <h2 class="soruMetin" id="soruMetin"></h2>
+      <div class="secenekler" id="butonlar"></div>
+    </div>
+
+    <p class="mesaj" id="durum"></p>
+    <button class="buton" id="yeniKatil" style="display:none">Yeni Oyuna Katıl</button>
+
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
     let pin = "";
-    
+    let benimIsim = "";
+
+    function durumYaz(metin, hata) {
+      const d = document.getElementById("durum");
+      d.textContent = metin;
+      d.className = hata ? "mesaj hata" : "mesaj";
+    }
+
     socket.on("connect", () => {
       try {
         const kayit = JSON.parse(sessionStorage.getItem("oyuncu"));
@@ -37,7 +52,7 @@
       sessionStorage.removeItem("oyuncu");
       document.getElementById("girisEkrani").style.display = "block";
       document.getElementById("soruEkrani").style.display = "none";
-      document.getElementById("durum").textContent = "";
+      durumYaz("");
     });
 
     document.getElementById("katil").addEventListener("click", () => {
@@ -47,29 +62,32 @@
       });
     });
 
-    socket.on("hata", (mesaj) => {
-      document.getElementById("durum").textContent = mesaj;
+    document.getElementById("yeniKatil").addEventListener("click", () => {
+      location.reload();
     });
+
+    socket.on("hata", (mesaj) => durumYaz(mesaj, true));
 
     socket.on("katildin", (veri) => {
       pin = veri.pin;
+      benimIsim = veri.isim;
       sessionStorage.setItem("oyuncu", JSON.stringify(veri));
       document.getElementById("girisEkrani").style.display = "none";
-      document.getElementById("durum").textContent =
-        veri.isim + " olarak katıldın! Oyunun başlamasını bekle.";
+      durumYaz(veri.isim + " olarak katıldın! Oyunun başlamasını bekle.");
     });
-    
+
     socket.on("soru", (s) => {
       document.getElementById("soruEkrani").style.display = "block";
-      document.getElementById("durum").textContent = "";
+      durumYaz("");
       document.getElementById("soruBilgi").textContent = "Soru " + s.no + " / " + s.toplam;
+      document.getElementById("soruMetin").textContent = s.soru;
 
       const alan = document.getElementById("butonlar");
       alan.innerHTML = "";
       s.secenekler.forEach((metin, i) => {
         const b = document.createElement("button");
+        b.className = "sec s" + i;
         b.textContent = metin;
-        b.style.cssText = "display:block;width:100%;padding:20px;margin:8px 0;font-size:18px";
         b.addEventListener("click", () => {
           socket.emit("cevap", { pin: pin, secenek: i });
         });
@@ -78,20 +96,31 @@
     });
 
     socket.on("cevapAlindi", () => {
+      document.getElementById("soruEkrani").style.display = "block";
       document.getElementById("butonlar").innerHTML = "";
-      document.getElementById("durum").textContent = "Cevabın alındı, diğerleri bekleniyor...";
+      durumYaz("Cevabın alındı, diğerleri bekleniyor...");
     });
 
     socket.on("sonuc", (v) => {
+      document.getElementById("soruEkrani").style.display = "block";
       document.getElementById("butonlar").innerHTML = "";
-      document.getElementById("durum").textContent =
+      document.getElementById("soruMetin").textContent = "";
+      durumYaz(
         (v.dogruMu ? "Doğru! +" + v.kazanilan : "Yanlış ya da cevapsız.") +
-        " Toplam puanın: " + v.toplam;
+        " Toplam puanın: " + v.toplam
+      );
     });
 
-    socket.on("oyunBitti", () => {
+    socket.on("oyunBitti", (siralama) => {
+      sessionStorage.removeItem("oyuncu");
+      document.getElementById("yeniKatil").style.display = "inline-block";
       document.getElementById("soruEkrani").style.display = "none";
-      document.getElementById("durum").textContent = "Oyun bitti! Sonuçlar ekranda.";
+      const sira = siralama.findIndex((o) => o.isim === benimIsim) + 1;
+      durumYaz(
+        sira > 0
+          ? "Oyun bitti! " + siralama.length + " kişi arasında " + sira + ". oldun."
+          : "Oyun bitti! Sonuçlar ekranda."
+      );
     });
   </script>
 </body>
