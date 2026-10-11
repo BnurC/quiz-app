@@ -1,12 +1,13 @@
 const express = require("express");
 const http = require("http");
+const path = require("path");
+const { randomUUID } = require("crypto");
 const { Server } = require("socket.io");
 const sorular = require("./questions.json");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const path = require("path");
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -24,6 +25,25 @@ function siralama(oyun) {
   return [...oyun.oyuncular]
     .sort((a, b) => b.puan - a.puan)
     .map((o) => ({ isim: o.isim, puan: o.puan }));
+}
+
+function soruPaketi(oyun) {
+  const s = sorular[oyun.soruNo];
+  const gecen = (Date.now() - oyun.baslangic) / 1000;
+  return {
+    no: oyun.soruNo + 1,
+    toplam: sorular.length,
+    soru: s.soru,
+    secenekler: s.secenekler,
+    sure: Math.max(1, Math.ceil(s.sure - gecen)),
+  };
+}
+
+function cevapSayisiPaketi(oyun) {
+  return {
+    cevaplayan: oyun.oyuncular.filter((o) => o.cevapladi).length,
+    toplam: oyun.oyuncular.length,
+  };
 }
 
 function sonrakiSoru(pin) {
@@ -44,16 +64,10 @@ function sonrakiSoru(pin) {
   oyun.oyuncular.forEach((o) => {
     o.cevapladi = false;
     o.sonSecenek = null;
+    o.sonSonuc = null;
   });
 
-  io.to(pin).emit("soru", {
-    no: oyun.soruNo + 1,
-    toplam: sorular.length,
-    soru: s.soru,
-    secenekler: s.secenekler,
-    sure: s.sure,
-  });
-
+  io.to(pin).emit("soru", soruPaketi(oyun));
   oyun.zamanlayici = setTimeout(() => soruBitir(pin), s.sure * 1000);
 }
 
@@ -72,16 +86,31 @@ function soruBitir(pin) {
     const kazanilan = dogruMu ? o.sonPuan : 0;
     o.puan += kazanilan;
     if (o.sonSecenek !== null) dagilim[o.sonSecenek]++;
-    io.to(o.id).emit("sonuc", { dogruMu, kazanilan, toplam: o.puan });
+    o.sonSonuc = { dogruMu, kazanilan, toplam: o.puan };
+    io.to(o.id).emit("sonuc", o.sonSonuc);
   });
 
-  io.to(oyun.host).emit("soruSonucu", {
+  oyun.hostSonuc = {
     dogru: s.dogru,
     dogruMetin: s.secenekler[s.dogru],
     dagilim,
     siralama: siralama(oyun).slice(0, 5),
     sonSoruMu: oyun.soruNo === sorular.length - 1,
-  });
+  };
+  io.to(oyun.host).emit("soruSonucu", oyun.hostSonuc);
+}
+
+function hostaDurumGonder(socket, pin, oyun) {
+  socket.emit("oyunOlusturuldu", { pin: pin, token: oyun.hostToken });
+  socket.emit("oyuncuListesi", oyun.oyuncular.map((o) => o.isim));
+  if (oyun.durum === "soru") {
+    socket.emit("soru", soruPaketi(oyun));
+    socket.emit("cevapSayisi", cevapSayisiPaketi(oyun));
+  } else if (oyun.durum === "sonuc") {
+    socket.emit("soruSonucu", oyun.hostSonuc);
+  } else if (oyun.durum === "bitti") {
+    socket.emit("oyunBitti", siralama(oyun));
+  }
 }
 
 io.on("connection", (socket) => {
@@ -91,14 +120,29 @@ io.on("connection", (socket) => {
     const pin = pinUret();
     oyunlar[pin] = {
       host: socket.id,
+      hostToken: randomUUID(),
       oyuncular: [],
       durum: "lobi",
       soruNo: -1,
       baslangic: 0,
       zamanlayici: null,
+      hostSonuc: null,
+      olusturma: Date.now(),
     };
     socket.join(pin);
-    socket.emit("oyunOlusturuldu", pin);
+    hostaDurumGonder(socket, pin, oyunlar[pin]);
+  });
+
+  socket.on("hostDon", (veri) => {
+    const pin = String((veri && veri.pin) || "");
+    const oyun = oyunlar[pin];
+    if (!oyun || oyun.hostToken !== String(veri.token)) {
+      socket.emit("oturumYok");
+      return;
+    }
+    oyun.host = socket.id;
+    socket.join(pin);
+    hostaDurumGonder(socket, pin, oyun);
   });
 
   socket.on("katil", (veri) => {
@@ -123,17 +167,43 @@ io.on("connection", (socket) => {
       return;
     }
 
+    const token = randomUUID();
     oyun.oyuncular.push({
       id: socket.id,
+      token: token,
       isim: isim,
       puan: 0,
       cevapladi: false,
       sonSecenek: null,
       sonPuan: 0,
+      sonSonuc: null,
     });
     socket.join(pin);
-    socket.emit("katildin", { pin: pin, isim: isim });
+    socket.emit("katildin", { pin: pin, isim: isim, token: token });
     io.to(oyun.host).emit("oyuncuListesi", oyun.oyuncular.map((o) => o.isim));
+  });
+
+  socket.on("tekrarKatil", (veri) => {
+    const pin = String((veri && veri.pin) || "");
+    const oyun = oyunlar[pin];
+    const oyuncu = oyun && oyun.oyuncular.find((o) => o.token === String(veri.token));
+    if (!oyuncu) {
+      socket.emit("oturumYok");
+      return;
+    }
+
+    oyuncu.id = socket.id;
+    socket.join(pin);
+    socket.emit("katildin", { pin: pin, isim: oyuncu.isim, token: oyuncu.token });
+
+    if (oyun.durum === "soru") {
+      if (oyuncu.cevapladi) socket.emit("cevapAlindi");
+      else socket.emit("soru", soruPaketi(oyun));
+    } else if (oyun.durum === "sonuc" && oyuncu.sonSonuc) {
+      socket.emit("sonuc", oyuncu.sonSonuc);
+    } else if (oyun.durum === "bitti") {
+      socket.emit("oyunBitti", siralama(oyun));
+    }
   });
 
   socket.on("oyunBaslat", (pin) => {
@@ -164,13 +234,10 @@ io.on("connection", (socket) => {
 
     socket.emit("cevapAlindi");
 
-    const cevaplayan = oyun.oyuncular.filter((o) => o.cevapladi).length;
-    io.to(oyun.host).emit("cevapSayisi", {
-      cevaplayan,
-      toplam: oyun.oyuncular.length,
-    });
+    const paket = cevapSayisiPaketi(oyun);
+    io.to(oyun.host).emit("cevapSayisi", paket);
 
-    if (cevaplayan === oyun.oyuncular.length) soruBitir(pin);
+    if (paket.cevaplayan === paket.toplam) soruBitir(pin);
   });
 
   socket.on("sonrakiSoru", (pin) => {
@@ -183,6 +250,17 @@ io.on("connection", (socket) => {
     console.log("Biri ayrıldı:", socket.id);
   });
 });
+
+// 6 saatten eski oyunları hafızadan temizle
+setInterval(() => {
+  const simdi = Date.now();
+  for (const pin in oyunlar) {
+    if (simdi - oyunlar[pin].olusturma > 6 * 60 * 60 * 1000) {
+      clearTimeout(oyunlar[pin].zamanlayici);
+      delete oyunlar[pin];
+    }
+  }
+}, 10 * 60 * 1000);
 
 const PORT = process.env.PORT || 3000;
 

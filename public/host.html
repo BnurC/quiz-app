@@ -30,6 +30,7 @@
   <div id="bitisEkrani" style="display:none">
     <h1>Oyun Bitti!</h1>
     <ol id="sonSkorlar"></ol>
+    <button id="yeniOyun">Yeni Oyun</button>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -54,12 +55,33 @@
       });
     }
 
-    socket.emit("oyunOlustur");
+    if (location.search === "?yeni") {
+  localStorage.removeItem("hostPin");
+  localStorage.removeItem("hostToken");
+}
 
-    socket.on("oyunOlusturuldu", (p) => {
-      pin = p;
-      document.getElementById("pinYazi").textContent = "PIN: " + pin;
-    });
+socket.on("connect", () => {
+  const kayitliPin = localStorage.getItem("hostPin");
+  const kayitliToken = localStorage.getItem("hostToken");
+  if (kayitliPin && kayitliToken) {
+    socket.emit("hostDon", { pin: kayitliPin, token: kayitliToken });
+  } else {
+    socket.emit("oyunOlustur");
+  }
+});
+
+socket.on("oturumYok", () => {
+  localStorage.removeItem("hostPin");
+  localStorage.removeItem("hostToken");
+  socket.emit("oyunOlustur");
+});
+
+socket.on("oyunOlusturuldu", (v) => {
+  pin = v.pin;
+  localStorage.setItem("hostPin", v.pin);
+  localStorage.setItem("hostToken", v.token);
+  document.getElementById("pinYazi").textContent = "PIN: " + pin;
+});
 
     socket.on("oyuncuListesi", (isimler) => listeDoldur("oyuncular", isimler));
 
@@ -69,6 +91,12 @@
 
     document.getElementById("sonraki").addEventListener("click", () => {
       socket.emit("sonrakiSoru", pin);
+    });
+    
+    document.getElementById("yeniOyun").addEventListener("click", () => {
+      localStorage.removeItem("hostPin");
+      localStorage.removeItem("hostToken");
+      location.reload();
     });
 
     socket.on("soru", (s) => {

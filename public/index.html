@@ -23,6 +23,22 @@
   <script>
     const socket = io();
     let pin = "";
+    
+    socket.on("connect", () => {
+      try {
+        const kayit = JSON.parse(sessionStorage.getItem("oyuncu"));
+        if (kayit) socket.emit("tekrarKatil", { pin: kayit.pin, token: kayit.token });
+      } catch (e) {
+        sessionStorage.removeItem("oyuncu");
+      }
+    });
+
+    socket.on("oturumYok", () => {
+      sessionStorage.removeItem("oyuncu");
+      document.getElementById("girisEkrani").style.display = "block";
+      document.getElementById("soruEkrani").style.display = "none";
+      document.getElementById("durum").textContent = "";
+    });
 
     document.getElementById("katil").addEventListener("click", () => {
       socket.emit("katil", {
@@ -37,11 +53,12 @@
 
     socket.on("katildin", (veri) => {
       pin = veri.pin;
+      sessionStorage.setItem("oyuncu", JSON.stringify(veri));
       document.getElementById("girisEkrani").style.display = "none";
       document.getElementById("durum").textContent =
         veri.isim + " olarak katıldın! Oyunun başlamasını bekle.";
     });
-
+    
     socket.on("soru", (s) => {
       document.getElementById("soruEkrani").style.display = "block";
       document.getElementById("durum").textContent = "";
