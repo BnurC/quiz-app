@@ -1,9 +1,11 @@
 :root {
   --mor: #46178f;
+  --mor-koyu: #33106b;
   --kirmizi: #e21b3c;
   --mavi: #1368ce;
   --sari: #d89e00;
   --yesil: #26890c;
+  --vurgu: #ffd23f;
 }
 
 * { box-sizing: border-box; }
@@ -11,15 +13,20 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--mor);
+  background: radial-gradient(circle at top, var(--mor) 0%, var(--mor-koyu) 100%) fixed;
   color: #fff;
   font-family: system-ui, Arial, sans-serif;
   text-align: center;
+  overflow-x: hidden;
 }
 
 .sayfa { max-width: 900px; margin: 0 auto; padding: 20px; }
 
 h1, h2, h3 { margin: 10px 0; }
+
+.logo { max-height: 90px; max-width: 70%; margin-top: 10px; }
+.baslik { font-size: 44px; margin: 8px 0 0; }
+.altBaslik { opacity: 0.85; margin: 0 0 16px; font-size: 18px; }
 
 input {
   display: block;
@@ -43,21 +50,36 @@ input {
   font-weight: bold;
   cursor: pointer;
   margin: 12px 0;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+.buton:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }
+
+.buton.ikincil {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-top: 30px;
+  box-shadow: none;
 }
 
-.buton:active { transform: scale(0.97); }
+.bitirKutu { text-align: right; }
 
 .pin { font-size: 72px; letter-spacing: 8px; margin: 0; }
-
 .adres { font-size: 24px; opacity: 0.9; }
-
 .mesaj { font-size: 22px; min-height: 30px; margin: 16px 0; }
-
 .hata { color: #ffd2d9; }
-
 .sayac { font-size: 56px; margin: 8px 0; }
-
 .soruMetin { font-size: 36px; margin: 16px 0; }
+
+.qr {
+  width: 240px;
+  height: 240px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 8px;
+}
 
 /* Oyuncu isim kutucukları */
 #oyuncular {
@@ -68,31 +90,64 @@ input {
   gap: 10px;
   justify-content: center;
 }
-
 #oyuncular li {
   background: rgba(255, 255, 255, 0.2);
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 20px;
 }
+#oyuncular li.yeni { animation: pop 0.4s ease backwards; }
 
-/* Skor tabloları */
-.skorlar {
-  max-width: 500px;
-  margin: 0 auto;
+/* Skor listeleri */
+.top5 {
+  list-style: none;
+  padding: 0;
+  max-width: 420px;
+  margin: 10px auto;
   text-align: left;
-  font-size: 24px;
-  line-height: 1.8;
+}
+.top5 li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+  font-size: 20px;
+  animation: kay 0.4s ease backwards;
+}
+.top5 li.ben { background: var(--vurgu); color: #222; font-weight: bold; }
+.top5.genis { max-width: 640px; }
+.top5.genis li { font-size: 28px; padding: 12px 18px; }
+
+/* Oyuncu skor bilgisi */
+.skorBilgi {
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+}
+.fark {
+  margin-top: 8px;
+  font-size: 19px;
+  background: rgba(255, 210, 63, 0.2);
+  border: 2px solid var(--vurgu);
+  border-radius: 8px;
+  padding: 8px;
 }
 
-/* Renkli şıklar: 2x2 ızgara */
+.puanBuyuk { font-size: 72px; font-weight: bold; color: var(--vurgu); margin: 4px 0 12px; }
+.kupa { font-size: 100px; animation: nabiz 1.2s ease-in-out infinite; }
+
+/* Renkli şıklar */
 .secenekler {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin: 16px 0;
 }
-
 .sec {
   border: none;
   border-radius: 8px;
@@ -104,47 +159,56 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  animation: pop 0.4s ease backwards;
+}
+.s0 { background: var(--kirmizi); }
+.s1 { background: var(--mavi); animation-delay: 0.08s; }
+.s2 { background: var(--sari); animation-delay: 0.16s; }
+.s3 { background: var(--yesil); animation-delay: 0.24s; }
+button.sec { cursor: pointer; }
+button.sec:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3); }
+.soluk { opacity: 0.3; }
+
+/* Süre çubuğu */
+.sureCubuk {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.sureCubuk > div {
+  height: 100%;
+  background: var(--vurgu);
+  transform-origin: left;
+  animation-name: azal;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
 }
 
-.s0 { background: var(--kirmizi); }
-.s1 { background: var(--mavi); }
-.s2 { background: var(--sari); }
-.s3 { background: var(--yesil); }
+/* Animasyonlar (sadece transform ve opacity: eski telefonlarda da akıcı) */
+@keyframes gir { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes salla { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+@keyframes nabiz { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes kay { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: none; } }
+@keyframes azal { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
-button.sec { cursor: pointer; }
-button.sec:active { transform: scale(0.96); }
+.ekran { animation: gir 0.4s ease backwards; }
+.dogru { color: #9dff8a; animation: pop 0.5s ease backwards; }
+.yanlis { color: #ffb3bd; animation: salla 0.5s ease; }
 
-.soluk { opacity: 0.3; }
+@media (prefers-reduced-motion: reduce) {
+  .ekran, .sec, .top5 li, #oyuncular li, .kupa, .dogru, .yanlis { animation: none; }
+}
 
 /* Telefon */
 @media (max-width: 600px) {
   .pin { font-size: 52px; }
+  .baslik { font-size: 34px; }
   .soruMetin { font-size: 26px; }
+  .puanBuyuk { font-size: 56px; }
   .sec { font-size: 18px; padding: 24px 8px; min-height: 90px; }
-}
-.buton.ikincil {
-  background: transparent;
-  color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  font-size: 16px;
-  padding: 10px 20px;
-  margin-top: 30px;
-}
-
-.skorBilgi {
-  font-size: 22px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: 10px;
-  margin: 10px 0;
-}
-
-.bitirKutu { text-align: right; }
-
-.qr {
-  width: 240px;
-  height: 240px;
-  background: #fff;
-  padding: 8px;
-  border-radius: 8px;
+  .top5.genis li { font-size: 22px; }
 }

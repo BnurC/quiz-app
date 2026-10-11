@@ -44,11 +44,20 @@ function siraBul(oyun, oyuncu) {
   return oyun.oyuncular.filter((o) => o.puan > oyuncu.puan).length + 1;
 }
 
+function ustFark(oyun, oyuncu) {
+  let en = null;
+  oyun.oyuncular.forEach((o) => {
+    if (o.puan > oyuncu.puan && (en === null || o.puan < en.puan)) en = o;
+  });
+  return en ? { isim: en.isim, fark: en.puan - oyuncu.puan } : null;
+}
+
 function siraPaketi(oyun, oyuncu) {
   return {
     sira: siraBul(oyun, oyuncu),
     puan: oyuncu.puan,
     kisi: oyun.oyuncular.length,
+    ust: ustFark(oyun, oyuncu),
   };
 }
 
@@ -109,23 +118,24 @@ function soruBitir(pin) {
   const s = sorular[oyun.soruNo];
   const dagilim = s.secenekler.map(() => 0);
 
-  // Puanlar eklenmeden ÖNCE herkesin sırasını hesapla
-  const oncekiSiralar = oyun.oyuncular.map((o) => siraBul(oyun, o));
-  const kisi = oyun.oyuncular.length;
-
-  oyun.oyuncular.forEach((o, i) => {
+  // 1. tur: herkesin puanını güncelle
+  oyun.oyuncular.forEach((o) => {
     const dogruMu = o.sonSecenek === s.dogru;
-    const kazanilan = dogruMu ? o.sonPuan : 0;
-    const oncekiPuan = o.puan;
-    o.puan += kazanilan;
+    o.sonDogru = dogruMu;
+    o.sonKazanilan = dogruMu ? o.sonPuan : 0;
+    o.puan += o.sonKazanilan;
     if (o.sonSecenek !== null) dagilim[o.sonSecenek]++;
+  });
+
+  // 2. tur: puanlar güncellendikten SONRA sıra ve ilk 5'i hesapla, herkese gönder
+  const top5 = siralama(oyun).slice(0, 5);
+
+  oyun.oyuncular.forEach((o) => {
     o.sonSonuc = {
-      dogruMu,
-      kazanilan,
-      toplam: o.puan,
-      oncekiPuan,
-      oncekiSira: oyun.soruNo > 0 ? oncekiSiralar[i] : null,
-      kisi,
+      dogruMu: o.sonDogru,
+      kazanilan: o.sonKazanilan,
+      guncel: siraPaketi(oyun, o),
+      top5: top5,
     };
     io.to(o.id).emit("sonuc", o.sonSonuc);
   });
@@ -134,11 +144,12 @@ function soruBitir(pin) {
     dogru: s.dogru,
     dogruMetin: s.secenekler[s.dogru],
     dagilim,
-    siralama: siralama(oyun).slice(0, 5),
+    siralama: top5,
     sonSoruMu: oyun.soruNo === sorular.length - 1,
   };
   io.to(oyun.host).emit("soruSonucu", oyun.hostSonuc);
 }
+
 
 function hostaDurumGonder(socket, pin, oyun) {
   socket.emit("oyunOlusturuldu", { pin: pin, token: oyun.hostToken });

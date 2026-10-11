@@ -13,47 +13,55 @@
       <button class="buton ikincil" id="bitir">Oyunu Bitir</button>
     </div>
 
-    <div id="lobi">
+    <div id="lobi" class="ekran">
+      <img class="logo" id="logo" alt="" style="display:none">
+      <h1 class="baslik" id="baslik">Quiz</h1>
+      <p class="altBaslik" id="altBaslik"></p>
       <p class="adres">Katılmak için: <b id="adres"></b></p>
       <img class="qr" id="qr" alt="QR kod">
       <h3>PIN</h3>
       <h1 class="pin" id="pinYazi">...</h1>
-      <h2>Oyuncular</h2>
+      <h2 id="oyuncuSayisi">0 oyuncu</h2>
       <ul id="oyuncular"></ul>
       <button class="buton" id="baslat">Oyunu Başlat</button>
     </div>
 
-    <div id="soruEkrani" style="display:none">
+    <div id="soruEkrani" class="ekran" style="display:none">
       <h3 id="soruNo"></h3>
+      <div class="sureCubuk" id="sureKap"></div>
       <h1 class="soruMetin" id="soruMetin"></h1>
       <div class="sayac" id="sayac"></div>
       <div class="secenekler" id="secenekler"></div>
       <p class="mesaj" id="cevapSayisi"></p>
     </div>
 
-    <div id="sonucEkrani" style="display:none">
+    <div id="sonucEkrani" class="ekran" style="display:none">
       <h2 id="dogruCevap"></h2>
       <div class="secenekler" id="sonucSecenekler"></div>
       <h3>Skor Tablosu</h3>
-      <ol class="skorlar" id="skorlar"></ol>
+      <ul class="top5 genis" id="skorlar"></ul>
       <button class="buton" id="sonraki">Sonraki</button>
     </div>
 
-    <div id="bitisEkrani" style="display:none">
+    <div id="bitisEkrani" class="ekran" style="display:none">
+      <div class="kupa">🏆</div>
       <h1>Oyun Bitti!</h1>
-      <ol class="skorlar" id="sonSkorlar"></ol>
+      <ul class="top5 genis" id="sonSkorlar"></ul>
       <button class="buton" id="yeniOyun">Yeni Oyun</button>
     </div>
 
   </div>
 
+  <script src="/ayar.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
     let pin = "";
     let sayacId = null;
     let sonSecenekler = [];
+    const gorulen = new Set();
 
+    baslikKur();
     document.getElementById("adres").textContent = location.host;
 
     function goster(id) {
@@ -64,14 +72,29 @@
         id === "soruEkrani" || id === "sonucEkrani" ? "block" : "none";
     }
 
-    function listeDoldur(id, satirlar) {
-      const liste = document.getElementById(id);
-      liste.innerHTML = "";
-      satirlar.forEach((metin) => {
+    function skorCiz(id, liste) {
+      const ul = document.getElementById(id);
+      ul.innerHTML = "";
+      const madalya = ["🥇", "🥈", "🥉"];
+      liste.forEach((o, i) => {
         const li = document.createElement("li");
-        li.textContent = metin;
-        liste.appendChild(li);
+        li.style.animationDelay = i * 0.12 + "s";
+        const sol = document.createElement("span");
+        sol.textContent = (madalya[i] || i + 1 + ".") + " " + o.isim;
+        const sag = document.createElement("span");
+        sag.textContent = o.puan;
+        li.appendChild(sol);
+        li.appendChild(sag);
+        ul.appendChild(li);
       });
+    }
+
+    function sureBarKur(id, sure) {
+      const kap = document.getElementById(id);
+      kap.innerHTML = "";
+      const d = document.createElement("div");
+      d.style.animationDuration = sure + "s";
+      kap.appendChild(d);
     }
 
     function secenekCiz(id, secenekler, sayilar, dogru) {
@@ -115,7 +138,20 @@
       document.getElementById("qr").src = "/qr?pin=" + pin;
     });
 
-    socket.on("oyuncuListesi", (isimler) => listeDoldur("oyuncular", isimler));
+    socket.on("oyuncuListesi", (isimler) => {
+      const liste = document.getElementById("oyuncular");
+      liste.innerHTML = "";
+      isimler.forEach((isim) => {
+        const li = document.createElement("li");
+        li.textContent = isim;
+        if (!gorulen.has(isim)) {
+          li.className = "yeni";
+          gorulen.add(isim);
+        }
+        liste.appendChild(li);
+      });
+      document.getElementById("oyuncuSayisi").textContent = isimler.length + " oyuncu";
+    });
 
     document.getElementById("baslat").addEventListener("click", () => {
       socket.emit("oyunBaslat", pin);
@@ -144,6 +180,7 @@
       document.getElementById("soruMetin").textContent = s.soru;
       document.getElementById("cevapSayisi").textContent = "";
       secenekCiz("secenekler", s.secenekler);
+      sureBarKur("sureKap", s.sure);
 
       let kalan = s.sure;
       document.getElementById("sayac").textContent = kalan;
@@ -165,14 +202,14 @@
       goster("sonucEkrani");
       document.getElementById("dogruCevap").textContent = "Doğru cevap: " + v.dogruMetin;
       secenekCiz("sonucSecenekler", sonSecenekler.length ? sonSecenekler : [v.dogruMetin], v.dagilim, v.dogru);
-      listeDoldur("skorlar", v.siralama.map((o) => o.isim + " - " + o.puan));
+      skorCiz("skorlar", v.siralama);
       document.getElementById("sonraki").textContent = v.sonSoruMu ? "Sonuçları Göster" : "Sonraki";
     });
 
     socket.on("oyunBitti", (siralama) => {
       clearInterval(sayacId);
       goster("bitisEkrani");
-      listeDoldur("sonSkorlar", siralama.slice(0, 10).map((o) => o.isim + " - " + o.puan));
+      skorCiz("sonSkorlar", siralama.slice(0, 10));
     });
   </script>
 </body>
