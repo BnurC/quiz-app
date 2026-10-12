@@ -188,6 +188,16 @@
       satirYaz("skorSatir", "farkSatir", v);
     });
 
+    socket.on("okuma", (s) => {
+      el("sonucKutu").style.display = "none";
+      el("soruEkrani").style.display = "block";
+      el("soruBilgi").textContent = "Soru " + s.no + " / " + s.toplam;
+      el("soruMetin").textContent = s.soru;
+      el("sureKap").innerHTML = "";
+      el("butonlar").innerHTML = "";
+      durumYaz("Soruyu oku, şıklar birazdan açılacak 👀");
+    });
+
     socket.on("soru", (s) => {
       el("sonucKutu").style.display = "none";
       el("soruEkrani").style.display = "block";

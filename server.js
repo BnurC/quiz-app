@@ -73,11 +73,34 @@ function soruPaketi(oyun) {
   };
 }
 
+// Şıklar açılmadan önceki aşama: şık ve doğru cevap GÖNDERİLMEZ
+function okumaPaketi(oyun) {
+  const s = sorular[oyun.soruNo];
+  return {
+    no: oyun.soruNo + 1,
+    toplam: sorular.length,
+    soru: s.soru,
+    sure: s.sure,
+  };
+}
+
 function cevapSayisiPaketi(oyun) {
   return {
     cevaplayan: oyun.oyuncular.filter((o) => o.cevapladi).length,
     toplam: oyun.oyuncular.length,
   };
+}
+
+function soruyuBaslat(pin) {
+  const oyun = oyunlar[pin];
+  if (!oyun) return;
+
+  const s = sorular[oyun.soruNo];
+  oyun.durum = "soru";
+  oyun.baslangic = Date.now();
+
+  io.to(pin).emit("soru", soruPaketi(oyun));
+  oyun.zamanlayici = setTimeout(() => soruBitir(pin), s.sure * 1000);
 }
 
 function sonrakiSoru(pin) {
@@ -92,9 +115,6 @@ function sonrakiSoru(pin) {
     return;
   }
 
-  const s = sorular[oyun.soruNo];
-  oyun.durum = "soru";
-  oyun.baslangic = Date.now();
   oyun.oyuncular.forEach((o) => {
     o.cevapladi = false;
     o.sonSecenek = null;
@@ -104,8 +124,12 @@ function sonrakiSoru(pin) {
     }
   });
 
-  io.to(pin).emit("soru", soruPaketi(oyun));
-  oyun.zamanlayici = setTimeout(() => soruBitir(pin), s.sure * 1000);
+  if (oyun.manuel) {
+    oyun.durum = "okuma";
+    io.to(pin).emit("okuma", okumaPaketi(oyun));
+  } else {
+    soruyuBaslat(pin);
+  }
 }
 
 function soruBitir(pin) {
@@ -150,11 +174,12 @@ function soruBitir(pin) {
   io.to(oyun.host).emit("soruSonucu", oyun.hostSonuc);
 }
 
-
 function hostaDurumGonder(socket, pin, oyun) {
   socket.emit("oyunOlusturuldu", { pin: pin, token: oyun.hostToken });
   socket.emit("oyuncuListesi", oyun.oyuncular.map((o) => o.isim));
-  if (oyun.durum === "soru") {
+  if (oyun.durum === "okuma") {
+    socket.emit("okuma", okumaPaketi(oyun));
+  } else if (oyun.durum === "soru") {
     socket.emit("soru", soruPaketi(oyun));
     socket.emit("cevapSayisi", cevapSayisiPaketi(oyun));
   } else if (oyun.durum === "sonuc") {
@@ -174,6 +199,7 @@ io.on("connection", (socket) => {
       hostToken: randomUUID(),
       oyuncular: [],
       durum: "lobi",
+      manuel: false,
       soruNo: -1,
       baslangic: 0,
       zamanlayici: null,
@@ -247,7 +273,10 @@ io.on("connection", (socket) => {
     socket.join(pin);
     socket.emit("katildin", { pin: pin, isim: oyuncu.isim, token: oyuncu.token });
 
-    if (oyun.durum === "soru") {
+    if (oyun.durum === "okuma") {
+      if (oyun.soruNo > 0) socket.emit("siraGuncel", siraPaketi(oyun, oyuncu));
+      socket.emit("okuma", okumaPaketi(oyun));
+    } else if (oyun.durum === "soru") {
       if (oyun.soruNo > 0) socket.emit("siraGuncel", siraPaketi(oyun, oyuncu));
       if (oyuncu.cevapladi) socket.emit("cevapAlindi");
       else socket.emit("soru", soruPaketi(oyun));
@@ -258,11 +287,22 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("oyunBaslat", (pin) => {
-    const oyun = oyunlar[String(pin)];
+  // Hem eski biçimi (sadece PIN) hem yeni biçimi ({ pin, manuel }) kabul eder
+  socket.on("oyunBaslat", (veri) => {
+    const nesne = veri !== null && typeof veri === "object";
+    const pin = String(nesne ? veri.pin : veri);
+    const oyun = oyunlar[pin];
     if (!oyun || oyun.host !== socket.id || oyun.durum !== "lobi") return;
     if (oyun.oyuncular.length === 0) return;
-    sonrakiSoru(String(pin));
+    oyun.manuel = nesne && veri.manuel === true;
+    sonrakiSoru(pin);
+  });
+
+  socket.on("siklariAc", (pin) => {
+    pin = String(pin);
+    const oyun = oyunlar[pin];
+    if (!oyun || oyun.host !== socket.id || oyun.durum !== "okuma") return;
+    soruyuBaslat(pin);
   });
 
   socket.on("cevap", (veri) => {
@@ -302,7 +342,7 @@ io.on("connection", (socket) => {
     pin = String(pin);
     const oyun = oyunlar[pin];
     if (!oyun || oyun.host !== socket.id) return;
-    if (oyun.durum !== "soru" && oyun.durum !== "sonuc") return;
+    if (oyun.durum !== "okuma" && oyun.durum !== "soru" && oyun.durum !== "sonuc") return;
 
     clearTimeout(oyun.zamanlayici);
     oyun.durum = "bitti";

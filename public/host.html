@@ -23,6 +23,7 @@
       <h1 class="pin" id="pinYazi">...</h1>
       <h2 id="oyuncuSayisi">0 oyuncu</h2>
       <ul id="oyuncular"></ul>
+      <label class="etiket"><input type="checkbox" id="manuel"> Şıkları ben açacağım</label>
       <button class="buton" id="baslat">Oyunu Başlat</button>
     </div>
 
@@ -32,6 +33,7 @@
       <h1 class="soruMetin" id="soruMetin"></h1>
       <div class="sayac" id="sayac"></div>
       <div class="secenekler" id="secenekler"></div>
+      <button class="buton" id="siklariAc" style="display:none">Şıkları Aç</button>
       <p class="mesaj" id="cevapSayisi"></p>
     </div>
 
@@ -154,7 +156,7 @@
     });
 
     document.getElementById("baslat").addEventListener("click", () => {
-      socket.emit("oyunBaslat", pin);
+      socket.emit("oyunBaslat", { pin: pin, manuel: document.getElementById("manuel").checked });
     });
 
     document.getElementById("sonraki").addEventListener("click", () => {
@@ -167,6 +169,23 @@
       }
     });
 
+    document.getElementById("siklariAc").addEventListener("click", () => {
+      socket.emit("siklariAc", pin);
+    });
+
+    socket.on("okuma", (s) => {
+      goster("soruEkrani");
+      sonSecenekler = [];
+      clearInterval(sayacId);
+      document.getElementById("soruNo").textContent = "Soru " + s.no + " / " + s.toplam;
+      document.getElementById("soruMetin").textContent = s.soru;
+      document.getElementById("sayac").textContent = "";
+      document.getElementById("sureKap").innerHTML = "";
+      document.getElementById("secenekler").innerHTML = "";
+      document.getElementById("cevapSayisi").textContent = "";
+      document.getElementById("siklariAc").style.display = "inline-block";
+    });
+
     document.getElementById("yeniOyun").addEventListener("click", () => {
       localStorage.removeItem("hostPin");
       localStorage.removeItem("hostToken");
@@ -174,6 +193,7 @@
     });
 
     socket.on("soru", (s) => {
+      document.getElementById("siklariAc").style.display = "none";
       goster("soruEkrani");
       sonSecenekler = s.secenekler;
       document.getElementById("soruNo").textContent = "Soru " + s.no + " / " + s.toplam;
