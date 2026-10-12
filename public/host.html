@@ -91,11 +91,12 @@
       });
     }
 
-    function sureBarKur(id, sure) {
+    function sureBarKur(id, toplam, kalan) {
       const kap = document.getElementById(id);
       kap.innerHTML = "";
       const d = document.createElement("div");
-      d.style.animationDuration = sure + "s";
+      d.style.animationDuration = toplam + "s";
+      d.style.animationDelay = "-" + Math.max(toplam - kalan, 0) + "s";
       kap.appendChild(d);
     }
 
@@ -200,7 +201,7 @@
       document.getElementById("soruMetin").textContent = s.soru;
       document.getElementById("cevapSayisi").textContent = "";
       secenekCiz("secenekler", s.secenekler);
-      sureBarKur("sureKap", s.sure);
+      sureBarKur("sureKap", s.toplamSure, s.kalan);
 
       let kalan = s.sure;
       document.getElementById("sayac").textContent = kalan;

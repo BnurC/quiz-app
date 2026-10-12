@@ -125,11 +125,12 @@
       });
     }
 
-    function sureBarKur(sure) {
+    function sureBarKur(toplam, kalan) {
       const kap = el("sureKap");
       kap.innerHTML = "";
       const d = document.createElement("div");
-      d.style.animationDuration = sure + "s";
+      d.style.animationDuration = toplam + "s";
+      d.style.animationDelay = "-" + Math.max(toplam - kalan, 0) + "s";
       kap.appendChild(d);
     }
 
@@ -204,7 +205,7 @@
       durumYaz("");
       el("soruBilgi").textContent = "Soru " + s.no + " / " + s.toplam;
       el("soruMetin").textContent = s.soru;
-      sureBarKur(s.sure);
+      sureBarKur(s.toplamSure, s.kalan);
 
       const alan = el("butonlar");
       alan.innerHTML = "";

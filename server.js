@@ -70,6 +70,8 @@ function soruPaketi(oyun) {
     soru: s.soru,
     secenekler: s.secenekler,
     sure: Math.max(1, Math.ceil(s.sure - gecen)),
+    toplamSure: s.sure,
+    kalan: Math.max(0, s.sure - gecen),
   };
 }
 
