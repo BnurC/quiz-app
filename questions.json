@@ -1,222 +1,365 @@
 [
   {
-    "soru": "Türkiye'nin en kalabalık şehri hangisidir?",
+    "soru": "Ünlü HIT ME HARD AND SOFT albümünün sahibi olan sanatçı kimdir?",
     "secenekler": [
-      "Ankara",
-      "İstanbul",
-      "İzmir",
-      "Bursa"
+      "Olivia Rodrigo",
+      "Billie Eilish",
+      "Lana Del Rey",
+      "Taylor Swift"
     ],
     "dogru": 1,
     "sure": 15
   },
   {
-    "soru": "Suyun kimyasal formülü nedir?",
+    "soru": "Vivaldi'nin ünlü Dört Mevsim eseri hangi türden parçalardır?",
     "secenekler": [
-      "CO2",
-      "O2",
-      "H2O",
-      "NaCl"
-    ],
-    "dogru": 2,
-    "sure": 15
-  },
-  {
-    "soru": "Türkiye Cumhuriyeti hangi yıl ilan edilmiştir?",
-    "secenekler": [
-      "1453",
-      "1919",
-      "1938",
-      "1923"
-    ],
-    "dogru": 3,
-    "sure": 15
-  },
-  {
-    "soru": "Güneş Sistemi'ndeki en büyük gezegen hangisidir?",
-    "secenekler": [
-      "Jüpiter",
-      "Satürn",
-      "Mars",
-      "Neptün"
+      "Konçerto",
+      "Senfoni",
+      "Sonat",
+      "Arabesk"
     ],
     "dogru": 0,
     "sure": 15
   },
   {
-    "soru": "Dünyanın en büyük kıtası hangisidir?",
+    "soru": "2015 yılında ünlü One Direction grubundan ilk ayrılan kişi kimdir?",
     "secenekler": [
-      "Afrika",
-      "Avrupa",
-      "Asya",
-      "Amerika"
+      "Harry Styles",
+      "Zayn Malik",
+      "Liam Payne",
+      "Louis Tomlinson"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Bohemian Rhapsody şarkısında geçen \"Fandango\" aslında nedir?",
+    "secenekler": [
+      "Hızlı bir İspanyol halk dansı",
+      "Bir tür Meksika cipsi",
+      "Grubun uydurduğu bir kelime",
+      "Freddie'nin kedisinin ismi"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Tool grubunun Lateralus şarkısı hangi matematiksel diziye göre kurgulanmıştır?",
+    "secenekler": [
+      "Pi sayısı",
+      "Asal sayılar dizisi",
+      "Fibonacci sayısı",
+      "Euler sayısı"
     ],
     "dogru": 2,
     "sure": 15
   },
   {
-    "soru": "12 × 12 işleminin sonucu kaçtır?",
+    "soru": "Aşağıdaki enstrümanlardan hangisi için \"Barok Dönemi bu enstrümanın altın çağıdır.\" ifadesi kullanılmaktadır?",
     "secenekler": [
-      "124",
-      "136",
-      "148",
-      "144"
+      "Violin",
+      "Klavsen",
+      "Yan Flüt",
+      "Organ"
     ],
     "dogru": 3,
     "sure": 15
   },
   {
-    "soru": "Bitkiler fotosentez sırasında havadan hangi gazı alır?",
+    "soru": "Aşağıdakilerden hangisi bir Sabrina Carpenter şarkısıdır?",
     "secenekler": [
-      "Oksijen",
-      "Azot",
-      "Karbondioksit",
-      "Hidrojen"
+      "Espresso",
+      "Latte",
+      "Fındıklı Nescafe",
+      "Mocha"
     ],
-    "dogru": 2,
+    "dogru": 0,
     "sure": 15
   },
   {
-    "soru": "Mona Lisa tablosunu kim yapmıştır?",
+    "soru": "\"We Can't Be Friends (Wait for Your Love)\" hangi sanatçının şarkısıdır?",
     "secenekler": [
-      "Michelangelo",
-      "Picasso",
-      "Van Gogh",
-      "Leonardo da Vinci"
+      "Selena Gomez",
+      "Sabrina Carpenter",
+      "Şebnem Ferah",
+      "Ariana Grande"
     ],
     "dogru": 3,
     "sure": 15
   },
   {
-    "soru": "Türkiye'nin en yüksek dağı hangisidir?",
+    "soru": "Ludwig van Beethoven hangi şehirde doğmuştur?",
     "secenekler": [
-      "Erciyes",
-      "Uludağ",
-      "Ağrı Dağı",
-      "Palandöken"
+      "Viyana",
+      "Sivas",
+      "Bonn",
+      "Berlin"
     ],
     "dogru": 2,
     "sure": 15
   },
   {
-    "soru": "Futbolda bir takım sahada kaç oyuncuyla oynar?",
+    "soru": "Michael Jackson'ın Beat It şarkısının solosunu kim yazmıştır?",
     "secenekler": [
-      "11",
-      "10",
+      "Jennifer Batten",
+      "Eddie Van Halen",
+      "Steve Vai",
+      "Slash"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Aşağıdaki isimlerden hangisi Rock dünyasında 27 yaş laneti olarak bilinen \"27'ler kulübü\"nde ismi anılan ünlülerden biri değildir?",
+    "secenekler": [
+      "Jimi Hendrix",
+      "Amy Winehouse",
+      "Jeff Buckley",
+      "Kurt Cobain"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Rock/Metal müziğin efsanelerinden Marilyn Manson'ın ismi nereden gelmektedir?",
+    "secenekler": [
+      "Gerçek adı ve soyadının tersten okunup İngilizceye uyarlanmasıyla",
+      "Dönemin popüler şarkısında geçen bir karakterin isminden",
+      "Marilyn Monroe ve Charles Manson'ın isimlerinin birleşiminden",
+      "Viktorya dönemi İngiltere'sinde yaşamış bir prensesin isminden"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Spotify'da \"Tüm Zamanların En Çok Dinlenen Şarkısı\" unvanını elinde tutan parça hangisidir?",
+    "secenekler": [
+      "Ed Sheeran - Shape of You",
+      "Kobra Murat - Kaliteyiz Markayız Havalıyız",
+      "The Weeknd - Blinding Lights",
+      "Imagine Dragons - Believer"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "David Bowie'nin gözlerinden birinin siyah, birinin mavi görünmesinin sebebi nedir?",
+    "secenekler": [
+      "Küçükken çok çay içmesi",
+      "Sol gözünün iris kaslarında olan bozukluk",
+      "Nadir bir genetik vaka barındırması",
+      "Sağ gözüne kalıcı dövme yapması"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Hangi sanatçının \"SOS\" isminde bir albümü vardır?",
+    "secenekler": [
+      "SZA",
+      "Rihanna",
+      "ABBA",
+      "Indila"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Wolfgang Amadeus Mozart, hangi parçayı bestelerken hayatını kaybetmiştir?",
+    "secenekler": [
+      "Eine Kleine Nachtmusik",
+      "Symphony No. 25",
+      "Requiem Aeternam",
+      "Lacrimosa"
+    ],
+    "dogru": 3,
+    "sure": 15
+  },
+  {
+    "soru": "STAN sözcüğünü Oxford Sözlüğü'ne kazandıran kişi kimdir?",
+    "secenekler": [
+      "Doja Cat",
+      "Michael Jackson",
+      "Eminem",
+      "Rihanna"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Spotify tarihinde 1 milyar dinlenmeye 96 günde ulaşarak bu barajı en hızlı geçen şarkı nedir?",
+    "secenekler": [
+      "Lady Gaga & Bruno Mars - Die With A Smile",
+      "Luis Fonsi - Despacito",
+      "Jungkook - Seven",
+      "Miley Cyrus - Flowers"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Heavy Metal türünün mucidi olarak anılan Tony Iommi hangi grubun gitaristidir?",
+    "secenekler": [
+      "Iron Maiden",
+      "Black Sabbath",
+      "Judas Priest",
+      "Pentagram"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Aşağıdakilerden hangisi Lana Del Rey'e ait bir albüm değildir?",
+    "secenekler": [
+      "Ultraviolence",
+      "My Dear Melancholy",
+      "Norman Fucking Rockwell!",
+      "Blue Banisters"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Türkiye'nin Eurovision'a İLK katılımı hangi sanatçı ve şarkıyla gerçekleşmiştir?",
+    "secenekler": [
+      "Ajda Pekkan - Pet'r Oil",
+      "Semiha Yankı - Seninle Bir Dakika",
+      "Nilüfer & Nazar - Sevince",
+      "Şebnem Paker & Grup Etnik - Dinle"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Pink Floyd'un solisti Roger Waters hangi albümden sonra grubu terk-i diyar eylemiştir?",
+    "secenekler": [
+      "The Wall",
+      "The Division Bell",
+      "The Final Cut",
+      "The Dark Side of the Moon"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Viola notaları genellikle hangi anahtarda yazılmaktadır?",
+    "secenekler": [
+      "Fa Anahtarı",
+      "Do Anahtarı",
+      "Sol Anahtarı",
+      "Müzik odasının anahtarı"
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "2025 yılında kurulan MANİFEST grubuna eklenen son ve 6. üye kimdir?",
+    "secenekler": [
+      "Hilal Yelekçi",
+      "Mina Solak",
+      "Esin Bahat",
+      "Zeynep Sude Oktay (Zoktay)"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "\"Curtis\" albümünü çıkardığı dönemde 50 Cent'in albüm satışı hakkında iddiaya girdiği, aynı dönemde albümünü çıkaracak olan sanatçı kimdir?",
+    "secenekler": [
+      "Drake",
+      "Travis Scott",
+      "Kanye West",
+      "Kibariye"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Müziğin Babası olarak anılan Johann Sebastian Bach, kaç çocuk sahibi olmuştur?",
+    "secenekler": [
+      "0",
+      "4",
       "12",
-      "9"
-    ],
-    "dogru": 0,
-    "sure": 10
-  },
-  {
-    "soru": "Hangisi bir web tarayıcısıdır?",
-    "secenekler": [
-      "Excel",
-      "Chrome",
-      "Word",
-      "Paint"
-    ],
-    "dogru": 1,
-    "sure": 15
-  },
-  {
-    "soru": "İstanbul hangi yıl fethedilmiştir?",
-    "secenekler": [
-      "1299",
-      "1453",
-      "1071",
-      "1517"
-    ],
-    "dogru": 1,
-    "sure": 15
-  },
-  {
-    "soru": "Hangisi bir memeli hayvandır?",
-    "secenekler": [
-      "Yunus",
-      "Köpekbalığı",
-      "Kurbağa",
-      "Timsah"
-    ],
-    "dogru": 0,
-    "sure": 15
-  },
-  {
-    "soru": "Bir üçgenin iç açıları toplamı kaç derecedir?",
-    "secenekler": [
-      "90",
-      "360",
-      "270",
-      "180"
+      "20"
     ],
     "dogru": 3,
     "sure": 15
   },
   {
-    "soru": "Japonya'nın başkenti neresidir?",
+    "soru": "Hangi ünlü rock grubu Türkiye'de hiç konser vermemiştir?",
     "secenekler": [
-      "Tokyo",
-      "Pekin",
-      "Seul",
-      "Bangkok"
+      "AC/DC",
+      "Guns N' Roses",
+      "Metallica",
+      "Scorpions"
     ],
     "dogru": 0,
     "sure": 15
   },
   {
-    "soru": "Vücutta kanı pompalayan organ hangisidir?",
+    "soru": "AC/DC'nin gitaristi Angus Young neden konserlerde okul forması giymektedir?",
     "secenekler": [
-      "Akciğer",
-      "Karaciğer",
-      "Mide",
-      "Kalp"
+      "Sahne stili için girdiği bir iddiayı kaybetmiştir",
+      "Pis Yedili izleyip onlar gibi olmayı istemiştir",
+      "Provalara hep okul sonrasında gittiği için",
+      "Bir kere giydikten sonra seyirciler çok sevdi diye devam etmiştir"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "Aşağıdaki şarkılardan hangisi XXXTentacion'a ait değildir?",
+    "secenekler": [
+      "Hope",
+      "Triumph",
+      "FE!N",
+      "Look At Me!"
+    ],
+    "dogru": 2,
+    "sure": 15
+  },
+  {
+    "soru": "\"Dolu Kadehi Ters Tut\" grubunun adı nereden gelmektedir?",
+    "secenekler": [
+      "Grubun vokalistinin sarhoşken kadehi ters tutmasıyla ortaya çıkmıştır.",
+      "Ömer Hayyam'ın 27 numaralı rubaisinden alınmadır.",
+      "Grubun gitaristi kadehi ters çevirerek bir örümceği yakalamasından ilham alınmıştır.",
+      "Grubun adı aslında \"Kırmızı şarap\"tı, sonra fanlar bu adı önerdi."
+    ],
+    "dogru": 1,
+    "sure": 15
+  },
+  {
+    "soru": "Sahnede gitar kırma geleneğini başlatan The Who'nun gitaristi Pete Townshend, ilkinde bunu neden yapmıştı?",
+    "secenekler": [
+      "Mekanın alçak tavanına yanlışlıkla sapını çarpmış ve seyirci gülünce de karizma bozulmasın diye tamamen kırmıştır",
+      "Grubun diğer üyeleri özenli çalmadıkları için sinirlenmiştir",
+      "Öncesinde girdiği bir iddiayı kaybetmiş ve ceza olarak gitarını kırmıştır",
+      "Öldü sandığı Çaycı Hüseyin'i seyirciler arasında görünce heyecandan ne yapacağını bilemeyip kırmıştır"
+    ],
+    "dogru": 0,
+    "sure": 15
+  },
+  {
+    "soru": "Tüm zamanların en çok izlenen müzik videosu klibi hangi şarkıya aittir?",
+    "secenekler": [
+      "Luis Fonsi - Despacito",
+      "PSY - Gangnam Style",
+      "Mark Ronson Ft. Bruno Mars - Uptown Funk",
+      "Pinkfong - Baby Shark"
     ],
     "dogru": 3,
-    "sure": 10
-  },
-  {
-    "soru": "Altının kimyasal simgesi nedir?",
-    "secenekler": [
-      "Ag",
-      "Au",
-      "Fe",
-      "Cu"
-    ],
-    "dogru": 1,
-    "sure": 20
-  },
-  {
-    "soru": "Romeo ve Juliet adlı oyunun yazarı kimdir?",
-    "secenekler": [
-      "Shakespeare",
-      "Dickens",
-      "Tolstoy",
-      "Hugo"
-    ],
-    "dogru": 0,
     "sure": 15
   },
   {
-    "soru": "Hangi gezegen \"Kızıl Gezegen\" olarak bilinir?",
+    "soru": "Metallica'nın basçısı Cliff Burton nasıl hayatını kaybetmiştir?",
     "secenekler": [
-      "Venüs",
-      "Mars",
-      "Merkür",
-      "Satürn"
+      "Overdose",
+      "Bar Kavgası",
+      "Üzerine otobüs devrilmesi",
+      "Aynı otobüsün üstüne ikinci kez düşmesi"
     ],
-    "dogru": 1,
-    "sure": 15
-  },
-  {
-    "soru": "81 sayısının karekökü kaçtır?",
-    "secenekler": [
-      "9",
-      "7",
-      "8",
-      "10"
-    ],
-    "dogru": 0,
+    "dogru": 3,
     "sure": 15
   }
 ]
