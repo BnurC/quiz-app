@@ -176,14 +176,15 @@
 
     socket.on("okuma", (s) => {
       goster("soruEkrani");
-      sonSecenekler = [];
+      sonSecenekler = s.secenekler || [];
       clearInterval(sayacId);
       document.getElementById("soruNo").textContent = "Soru " + s.no + " / " + s.toplam;
       document.getElementById("soruMetin").textContent = s.soru;
       document.getElementById("sayac").textContent = "";
       document.getElementById("sureKap").innerHTML = "";
-      document.getElementById("secenekler").innerHTML = "";
-      document.getElementById("cevapSayisi").textContent = "";
+      secenekCiz("secenekler", s.secenekler || []);
+      document.getElementById("cevapSayisi").textContent =
+        "Şıklar şu an sadece sende görünüyor. Hazır olunca \"Şıkları Aç\"a bas.";
       document.getElementById("siklariAc").style.display = "inline-block";
     });
 

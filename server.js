@@ -75,15 +75,17 @@ function soruPaketi(oyun) {
   };
 }
 
-// Şıklar açılmadan önceki aşama: şık ve doğru cevap GÖNDERİLMEZ
-function okumaPaketi(oyun) {
+// Şıklar açılmadan önceki aşama: şıklar SADECE host için pakete eklenir
+function okumaPaketi(oyun, hostIcin) {
   const s = sorular[oyun.soruNo];
-  return {
+  const paket = {
     no: oyun.soruNo + 1,
     toplam: sorular.length,
     soru: s.soru,
     sure: s.sure,
   };
+  if (hostIcin) paket.secenekler = s.secenekler;
+  return paket;
 }
 
 function cevapSayisiPaketi(oyun) {
@@ -127,12 +129,13 @@ function sonrakiSoru(pin) {
   });
 
   if (oyun.manuel) {
-    oyun.durum = "okuma";
-    io.to(pin).emit("okuma", okumaPaketi(oyun));
+  oyun.durum = "okuma";
+  oyun.oyuncular.forEach((o) => io.to(o.id).emit("okuma", okumaPaketi(oyun)));
+  io.to(oyun.host).emit("okuma", okumaPaketi(oyun, true));
   } else {
     soruyuBaslat(pin);
   }
-}
+  }
 
 function soruBitir(pin) {
   const oyun = oyunlar[pin];
@@ -180,7 +183,7 @@ function hostaDurumGonder(socket, pin, oyun) {
   socket.emit("oyunOlusturuldu", { pin: pin, token: oyun.hostToken });
   socket.emit("oyuncuListesi", oyun.oyuncular.map((o) => o.isim));
   if (oyun.durum === "okuma") {
-    socket.emit("okuma", okumaPaketi(oyun));
+    socket.emit("okuma", okumaPaketi(oyun, true));
   } else if (oyun.durum === "soru") {
     socket.emit("soru", soruPaketi(oyun));
     socket.emit("cevapSayisi", cevapSayisiPaketi(oyun));
