@@ -22,7 +22,7 @@
     "sure": 15
   },
   {
-    "soru": "2015 yılında ünlü One Direction grubundan ilk ayrılan kişi kimdir?",
+    "soru": "2015 yılında One Direction grubundan ilk ayrılan kişi kimdir?",
     "secenekler": [
       "Harry Styles",
       "Zayn Malik",
@@ -33,7 +33,7 @@
     "sure": 15
   },
   {
-    "soru": "Bohemian Rhapsody şarkısında geçen \"Fandango\" aslında nedir?",
+    "soru": "Bohemian Rhapsody şarkısında geçen \"Fandango\" kelimesi aslında nedir?",
     "secenekler": [
       "Hızlı bir İspanyol halk dansı",
       "Bir tür Meksika cipsi",
@@ -147,7 +147,7 @@
     "secenekler": [
       "Küçükken çok çay içmesi",
       "Sol gözünün iris kaslarında olan bozukluk",
-      "Nadir bir genetik vaka barındırması",
+      "Nadir bir genetik varyant barındırması",
       "Sağ gözüne kalıcı dövme yapması"
     ],
     "dogru": 1,
